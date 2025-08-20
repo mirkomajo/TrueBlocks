@@ -1,0 +1,3 @@
+config/*.txt
+modules/utility/api_open_ai.txt
+last_session.ambersession
