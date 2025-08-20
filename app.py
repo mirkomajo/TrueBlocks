@@ -167,7 +167,8 @@ def clean_value(v: object) -> str:
 
 
 APP_DIR = app_dir()
-CONFIG_PATH = APP_DIR / CONFIG_FILENAME
+CONFIG_DIR = APP_DIR / "config"
+CONFIG_PATH = CONFIG_DIR / CONFIG_FILENAME
 DEFAULT_SESSION_PATH = APP_DIR / DEFAULT_SESSION_NAME
 
 DEFAULT_CONFIG = {
@@ -191,6 +192,7 @@ DEFAULT_CONFIG = {
 
 def save_config(cfg: dict) -> None:
     try:
+        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
         CONFIG_PATH.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
     except Exception as e:
         try:

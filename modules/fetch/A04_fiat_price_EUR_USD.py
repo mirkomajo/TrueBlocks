@@ -1,6 +1,6 @@
-# This script reads transaction timestamps from database/data_decode_txs.csv,
+# This script reads transaction timestamps from database/data_onchain/data_decode_txs.csv,
 # fetches USD/EUR and EUR/USD rates for each timestamp’s UTC day,
-# and appends ONLY NEW results to database/data_price_usd_eur.csv.
+# and appends ONLY NEW results to database/data_forex/data_price_usd_eur.csv.
 # Output and logging adopt the requested CLI layout/style (info lines, progress bar, summary).
 # Software Version 2.4
 # NOTE for future maintainers (including AI):
@@ -109,11 +109,13 @@ def progress_bar(i: int, n: int):
 
 def main():
     # Resolve paths relative to this file:
-    base_dir = (Path(__file__).resolve().parent / ".." / "..").resolve()
-    db_dir = base_dir / "database"
-    db_dir.mkdir(parents=True, exist_ok=True)
-    in_csv = db_dir / "data_decode_txs.csv"
-    out_csv = db_dir / "data_price_usd_eur.csv"
+    base_dir = Path(__file__).resolve().parents[2]
+    db_onchain = base_dir / "database" / "data_onchain"
+    db_forex = base_dir / "database" / "data_forex"
+    db_onchain.mkdir(parents=True, exist_ok=True)
+    db_forex.mkdir(parents=True, exist_ok=True)
+    in_csv = db_onchain / "data_decode_txs.csv"
+    out_csv = db_forex / "data_price_usd_eur.csv"
 
     if not in_csv.exists():
         print(f"[INFO] Input CSV not found.")

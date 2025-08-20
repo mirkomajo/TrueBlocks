@@ -1,7 +1,7 @@
 # A01_decode_txs.py — Linea (CHAIN_ID=59144)
 # Software Version 1.0
-# Reads C:\TrueBlocks\database\data_raw_txs.csv (etherscan-style export) and writes:
-#   - C:\TrueBlocks\database\data_decode_txs.csv  (combined: both successful and failed)
+# Reads C:\TrueBlocks\database\data_onchain\data_raw_txs.csv (etherscan-style export) and writes:
+#   - C:\TrueBlocks\database\data_onchain\data_decode_txs.csv  (combined: both successful and failed)
 #
 # Columns (same layout for all rows):
 #   tx_hash, tx_timestamp, block_time, type, from_address, to_address, amount_sent, amount_received, total_gas_eth, nft_transfere
@@ -16,7 +16,7 @@
 # - Writes/merges a single output file (no separate success/failed files).
 # - Prints per-tx info lines: "[INFO] processing Transaction #N" and shows a progress bar.
 
-import os, csv, time, string, sys
+import os, csv, time, string, sys, json
 import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -29,20 +29,38 @@ from pathlib import Path
 # Script location: C:\TrueBlocks\modules\fetch
 HERE = os.path.dirname(__file__)
 
-# Go up two levels (to C:\TrueBlocks) then into "database"
+# Go up two levels (to C:\TrueBlocks)
 ROOT_DIR = os.path.normpath(os.path.join(HERE, "..", ".."))
-DATA_DIR = os.path.join(ROOT_DIR, "database")
+CONFIG_DIR = os.path.join(ROOT_DIR, "config")
+
+# Load wallet address
+CONFIG_JSON = os.path.join(CONFIG_DIR, "config.json")
+try:
+    with open(CONFIG_JSON, "r", encoding="utf-8") as f:
+        WALLET_ADDRESS = json.load(f).get("wallet_address", "").lower()
+except Exception:
+    WALLET_ADDRESS = ""
+
+# Load API key
+def load_api_key() -> str:
+    key_path = os.path.join(CONFIG_DIR, "api_key_etherscan.txt")
+    try:
+        with open(key_path, "r", encoding="utf-8") as fh:
+            return fh.read().strip()
+    except FileNotFoundError:
+        return os.getenv("ETHERSCAN_API_KEY", "")
+
+API_KEY = load_api_key()
+BASE_URL = "https://api.etherscan.io/v2/api"
+CHAIN_ID = 59144  # Linea mainnet
+
+# Data directories
+DATA_DIR = os.path.join(ROOT_DIR, "database", "data_onchain")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 # Filenames (absolute via DATA_DIR)
 RAW_CSV = Path(DATA_DIR) / "data_raw_txs.csv"
 OUT_CSV_DECODED = Path(DATA_DIR) / "data_decode_txs.csv"
-
-# Chain / API
-WALLET_ADDRESS = "0x4e118f5a1ed501bd0b4eac76c8bd49ed1895bfc8".lower()
-API_KEY = os.getenv("ETHERSCAN_API_KEY", "IXW7N628V6G8G1M38MFJHTM7BZAV26SSVG")
-BASE_URL = "https://api.etherscan.io/v2/api"
-CHAIN_ID = 59144  # Linea mainnet
 
 AT_TZ = ZoneInfo("Europe/Vienna")
 
