@@ -1,0 +1,11 @@
+{
+  "name": "trueblocks-dashboard",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/main.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
