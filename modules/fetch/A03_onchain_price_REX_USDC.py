@@ -1,7 +1,7 @@
 # A02_onchain_price_REX_USDC.py
 # Software Version 1.4 (increase with changes by +0.1, also for AI made changes)
-# Reads from C:\TrueBlocks\database\data_decode_txs.csv
-# Writes to C:\TrueBlocks\database\data_price_rex_usdc.csv
+# Reads from C:\TrueBlocks\database\data_onchain\data_decode_txs.csv
+# Writes to C:\TrueBlocks\database\data_onchain\data_price_rex_usdc.csv
 #
 # Behavior:
 # - Preserves ALL columns from input, in their original order
@@ -34,9 +34,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 getcontext().prec = 60
 
 # ---------------------------------- Paths ------------------------------------
-INPUT_CSV  = Path(r"C:\TrueBlocks\database\data_decode_txs.csv")
-OUTPUT_CSV = Path(r"C:\TrueBlocks\database\data_price_rex_usdc.csv")
+HERE = Path(__file__).resolve()
+ROOT_DIR = HERE.parents[2]
+DATA_DIR = ROOT_DIR / "database" / "data_onchain"
+INPUT_CSV = DATA_DIR / "data_decode_txs.csv"
+OUTPUT_CSV = DATA_DIR / "data_price_rex_usdc.csv"
 OUTPUT_TMP = OUTPUT_CSV.with_suffix(".csv.tmp")
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # ------------------------------- Chain / Pool --------------------------------
 LINEA_RPC_URL = os.environ.get("LINEA_RPC_URL", "https://rpc.linea.build")  # chainId 59144

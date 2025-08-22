@@ -7,6 +7,7 @@ import requests
 import os
 import time
 import re
+import json
 from datetime import datetime, timedelta, timezone
 
 """
@@ -15,23 +16,39 @@ Linea wallet raw fetcher (timeframe-enabled, no block lookups)
 - Timeframes like: '1min', '2h', '3d', '1w', '1m' (month), '2mo', '1y'
 - Absolute start time like '19.06.2025 11:30' (until now)
 - Absolute range like '19.06.2025 11:30 to 21.06.2025 23:00' (NEW in v1.1)
-- Appends to database/data_raw_txs.csv (skips dups by tx hash)
+- Appends to database/data_onchain/data_raw_txs.csv (skips dups by tx hash)
 - Uses Etherscan v2 multi-chain endpoint with Linea (chain id 59144)
 """
 
 # ========= CONFIG =========
-WALLET_ADDRESS = "0x4e118f5a1ed501bd0b4eac76c8bd49ed1895bfc8"
+# Determine repository root
+HERE = os.path.dirname(__file__)
+ROOT_DIR = os.path.normpath(os.path.join(HERE, "..", ".."))
+CONFIG_DIR = os.path.join(ROOT_DIR, "config")
 
-API_KEY = os.getenv("ETHERSCAN_API_KEY", "IXW7N628V6G8G1M38MFJHTM7BZAV26SSVG")
+# Load wallet address from config JSON
+CONFIG_JSON = os.path.join(CONFIG_DIR, "config.json")
+try:
+    with open(CONFIG_JSON, "r", encoding="utf-8") as f:
+        WALLET_ADDRESS = json.load(f).get("wallet_address", "").lower()
+except Exception:
+    WALLET_ADDRESS = ""
+
+# Load API key from dedicated file or environment variable
+def load_api_key() -> str:
+    key_path = os.path.join(CONFIG_DIR, "api_key_etherscan.txt")
+    try:
+        with open(key_path, "r", encoding="utf-8") as fh:
+            return fh.read().strip()
+    except FileNotFoundError:
+        return os.getenv("ETHERSCAN_API_KEY", "")
+
+API_KEY = load_api_key()
 BASE_URL = "https://api.etherscan.io/v2/api"  # Etherscan v2 multi-chain endpoint
 CHAIN_ID = 59144  # Linea mainnet
 
-# Script location: C:\TrueBlocks\modules\fetch
-HERE = os.path.dirname(__file__)
-
-# Go up two levels (to C:\TrueBlocks) then into "database"
-ROOT_DIR = os.path.normpath(os.path.join(HERE, "..", ".."))
-DATA_DIR = os.path.join(ROOT_DIR, "database")
+# Go up two levels (to C:\TrueBlocks) then into "database/data_onchain"
+DATA_DIR = os.path.join(ROOT_DIR, "database", "data_onchain")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 RAW_CSV_FILENAME = os.path.join(DATA_DIR, "data_raw_txs.csv")

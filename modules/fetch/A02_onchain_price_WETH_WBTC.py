@@ -1,7 +1,7 @@
 # A02_onchain_price_WETH_BTC.py
 # Software Version 1.0
-# Reads from C:\TrueBlocks\database\data_decode_txs.csv
-# Writes to C:\TrueBlocks\database\data_price_weth_wbtc.csv
+# Reads from C:\TrueBlocks\database\data_onchain\data_decode_txs.csv
+# Writes to C:\TrueBlocks\database\data_onchain\data_price_weth_wbtc.csv
 # - Only processes rows not already present in the output (by tx_hash)
 # - Live CLI progress bar (no extra blank line before Finished)
 # - Saves CSV sorted from latest to oldest by tx_timestamp
@@ -27,9 +27,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 getcontext().prec = 60
 
 # ---------------------------------- Paths ------------------------------------
-INPUT_CSV  = Path(r"C:\TrueBlocks\database\data_decode_txs.csv")
-OUTPUT_CSV = Path(r"C:\TrueBlocks\database\data_price_weth_wbtc.csv")
+HERE = Path(__file__).resolve()
+ROOT_DIR = HERE.parents[2]
+DATA_DIR = ROOT_DIR / "database" / "data_onchain"
+INPUT_CSV = DATA_DIR / "data_decode_txs.csv"
+OUTPUT_CSV = DATA_DIR / "data_price_weth_wbtc.csv"
 OUTPUT_TMP = OUTPUT_CSV.with_suffix(".csv.tmp")
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # ------------------------------- Chain / Pool --------------------------------
 LINEA_RPC_URL = os.environ.get("LINEA_RPC_URL", "https://rpc.linea.build")  # chainId 59144

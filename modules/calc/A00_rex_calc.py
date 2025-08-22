@@ -6,14 +6,16 @@ import re
 import pandas as pd
 
 # --- config (relative paths) ---
-BASE_DIR   = os.path.dirname(os.path.abspath(__file__))      # folder containing A00_rex_calc.py
-ROOT_DIR   = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))  # go up to C:\TrueBlocks
-DATA_DIR   = os.path.join(ROOT_DIR, "database")
-os.makedirs(DATA_DIR, exist_ok=True)  # ensure the database folder exists
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # folder containing A00_rex_calc.py
+ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))  # go up to C:\TrueBlocks
+ONCHAIN_DIR = os.path.join(ROOT_DIR, "database", "data_onchain")
+TAX_DIR = os.path.join(ROOT_DIR, "database", "data_tax_basis")
+os.makedirs(ONCHAIN_DIR, exist_ok=True)
+os.makedirs(TAX_DIR, exist_ok=True)
 
-INPUT_CSV    = os.path.join(DATA_DIR, "data_decode_txs.csv")
-FILTERED_CSV = os.path.join(DATA_DIR, "rex_filter_txs.csv")
-SUMMARY_CSV  = os.path.join(DATA_DIR, "rex_summary.csv")
+INPUT_CSV = os.path.join(ONCHAIN_DIR, "data_decode_txs.csv")
+FILTERED_CSV = os.path.join(TAX_DIR, "rex_filter_txs.csv")
+SUMMARY_CSV = os.path.join(TAX_DIR, "rex_summary.csv")
 TOKEN = "REX"
 
 # --- helpers ---

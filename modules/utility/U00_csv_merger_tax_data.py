@@ -38,12 +38,14 @@ def main():
     print(f"Version: {VERSION}")
 
     repo_root = Path(__file__).resolve().parents[2]
-    db_dir = repo_root / "database"
+    db_onchain = repo_root / "database" / "data_onchain"
+    db_forex = repo_root / "database" / "data_forex"
+    db_tax = repo_root / "database" / "data_tax_basis"
 
-    txs_path = db_dir / "data_decode_txs.csv"
-    rex_path = db_dir / "data_price_rex_usdc.csv"
-    fx_path  = db_dir / "data_price_usd_eur.csv"
-    out_path = db_dir / "data_tax_rex.csv"
+    txs_path = db_onchain / "data_decode_txs.csv"
+    rex_path = db_onchain / "data_price_rex_usdc.csv"
+    fx_path  = db_forex / "data_price_usd_eur.csv"
+    out_path = db_tax / "data_tax_rex.csv"
 
     # Read inputs
     txs = read_csv_str(txs_path)

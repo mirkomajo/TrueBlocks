@@ -172,16 +172,17 @@ def make_report_table(df: pd.DataFrame) -> pd.DataFrame:
 
 def main():
     here = Path(__file__).resolve()
-    input_csv  = here.parents[2] / "database" / "data_tax_rex.csv"
-    output_csv = here.parents[2] / "database" / "data_tax_report_rex.csv"
+    input_csv = here.parents[2] / "database" / "data_tax_basis" / "data_tax_rex.csv"
+    output_csv = here.parents[2] / "database" / "data_tax_report" / "data_tax_report_rex.csv"
 
     ap = argparse.ArgumentParser(description="REX tax report (Austria): LP inflows taxed at receipt; swaps not taxed here. EUR rounded to 2 decimals.")
-    ap.add_argument("--csv", type=Path, default=input_csv, help="Input CSV (default: ../../database/data_tax_rex.csv)")
-    ap.add_argument("--out", type=Path, default=output_csv, help="Output CSV (default: ../../database/data_tax_report_rex.csv)")
+    ap.add_argument("--csv", type=Path, default=input_csv, help="Input CSV (default: ../../database/data_tax_basis/data_tax_rex.csv)")
+    ap.add_argument("--out", type=Path, default=output_csv, help="Output CSV (default: ../../database/data_tax_report/data_tax_report_rex.csv)")
     args = ap.parse_args()
 
     df = load_data(args.csv)
     report_df = make_report_table(df)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
     report_df.to_csv(args.out, index=False, encoding="utf-8")
 
     print(summarize(df))

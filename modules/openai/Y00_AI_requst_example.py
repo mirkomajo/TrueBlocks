@@ -5,11 +5,8 @@ from pathlib import Path
 from openai import OpenAI
 
 def load_api_key() -> str:
-    """
-    Reads the API key from ../utility/api_open_ai.txt
-    (relative to this script's directory).
-    """
-    key_path = Path(__file__).resolve().parent.parent / "utility" / "api_open_ai.txt"
+    """Read the OpenAI API key from config/api_key_openai.txt."""
+    key_path = Path(__file__).resolve().parents[2] / "config" / "api_key_openai.txt"
     try:
         return key_path.read_text(encoding="utf-8").strip()
     except FileNotFoundError:
